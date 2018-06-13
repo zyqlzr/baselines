@@ -222,6 +222,7 @@ def learn(env,
 
     with tempfile.TemporaryDirectory() as td:
         td = checkpoint_path or td
+        logger.log('input checkpoint_path={}, td={}'.format(checkpoint_path, td))
 
         model_file = os.path.join(td, "model")
         model_saved = False
@@ -229,6 +230,8 @@ def learn(env,
             load_state(model_file)
             logger.log('Loaded model from {}'.format(model_file))
             model_saved = True
+        else:
+            logger.log('un-load model')
 
         for t in range(max_timesteps):
             if callback is not None:
@@ -295,6 +298,7 @@ def learn(env,
                     if print_freq is not None:
                         logger.log("Saving model due to mean reward increase: {} -> {}".format(
                                    saved_mean_reward, mean_100ep_reward))
+                    logger.log('save model=', model_file)
                     save_state(model_file)
                     model_saved = True
                     saved_mean_reward = mean_100ep_reward
