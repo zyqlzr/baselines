@@ -78,6 +78,25 @@ def load(path):
     """
     return ActWrapper.load(path)
 
+def load_model(env, q_func, path):
+    def make_obs_ph(name):
+        return ObservationInput(env.observation_space, name=name)
+    act_params = {
+        'make_obs_ph': make_obs_ph,
+        'q_func': q_func,
+        'num_actions': env.action_space.n,
+    }
+
+    act = deepq.build_act(**act_params)
+    sess = tf.Session()
+    sess.__enter__()
+    path = os.path.join(path, "model")
+    print("load_model path=", path)
+    path = load_state(path)
+
+    act = ActWrapper(act, act_params)
+    return act
+
 
 def learn(env,
           q_func,
@@ -302,9 +321,11 @@ def learn(env,
                     save_state(model_file)
                     model_saved = True
                     saved_mean_reward = mean_100ep_reward
+
         if model_saved:
             if print_freq is not None:
                 logger.log("Restored model with mean reward: {}".format(saved_mean_reward))
             load_state(model_file)
-
+        else:
+            logger.log('skip model save')
     return act
