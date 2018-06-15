@@ -325,7 +325,9 @@ def learn(env,
         if model_saved:
             if print_freq is not None:
                 logger.log("Restored model with mean reward: {}".format(saved_mean_reward))
-            load_state(model_file)
+            #load_state(model_file)
+            logger.log('model save while train end')
+            save_state(model_file)
         else:
             logger.log('skip model save')
     return act
