@@ -302,4 +302,9 @@ def save_state(fname):
     saver = tf.train.Saver()
     saver.save(tf.get_default_session(), fname)
 
+def save_state_by_step(fname, gstep):
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
+    saver = tf.train.Saver()
+    saver.save(tf.get_default_session(), fname, global_step=gstep)
+
 

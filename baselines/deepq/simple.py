@@ -7,7 +7,7 @@ import cloudpickle
 import numpy as np
 
 import baselines.common.tf_util as U
-from baselines.common.tf_util import load_state, save_state
+from baselines.common.tf_util import load_state, save_state, save_state_by_step
 from baselines import logger
 from baselines.common.schedules import LinearSchedule
 from baselines.common.input import observation_input
@@ -236,6 +236,7 @@ def learn(env,
 
     episode_rewards = [0.0]
     saved_mean_reward = None
+    mean_100ep_reward = None
     obs = env.reset()
     reset = True
 
@@ -252,7 +253,9 @@ def learn(env,
         else:
             logger.log('un-load model')
 
+        total_step = 0
         for t in range(max_timesteps):
+            total_step = t
             if callback is not None:
                 if callback(locals(), globals()):
                     break
@@ -318,7 +321,7 @@ def learn(env,
                         logger.log("Saving model due to mean reward increase: {} -> {}".format(
                                    saved_mean_reward, mean_100ep_reward))
                     logger.log('save model=', model_file)
-                    save_state(model_file)
+                    save_state_by_step(model_file, total_step)
                     model_saved = True
                     saved_mean_reward = mean_100ep_reward
 
@@ -327,7 +330,7 @@ def learn(env,
                 logger.log("Restored model with mean reward: {}".format(saved_mean_reward))
             #load_state(model_file)
             logger.log('model save while train end')
-            save_state(model_file)
+            save_state_by_step(model_file, total_step)
         else:
             logger.log('skip model save')
     return act
