@@ -90,7 +90,7 @@ def load_model(env, q_func, path):
     act = deepq.build_act(**act_params)
     sess = tf.Session()
     sess.__enter__()
-    path = os.path.join(path, "model")
+    #path = os.path.join(path, "model-25000")
     print("load_model path=", path)
     path = load_state(path)
 
